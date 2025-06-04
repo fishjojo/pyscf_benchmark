@@ -1,0 +1,472 @@
+Architecture:                       x86_64
+CPU op-mode(s):                     32-bit, 64-bit
+Address sizes:                      46 bits physical, 48 bits virtual
+Byte Order:                         Little Endian
+CPU(s):                             56
+On-line CPU(s) list:                0-55
+Vendor ID:                          GenuineIntel
+Model name:                         Intel(R) Xeon(R) Platinum 8276 CPU @ 2.20GHz
+CPU family:                         6
+Model:                              85
+Thread(s) per core:                 1
+Core(s) per socket:                 28
+Socket(s):                          2
+Stepping:                           7
+CPU(s) scaling MHz:                 87%
+CPU max MHz:                        4000.0000
+CPU min MHz:                        1000.0000
+BogoMIPS:                           4400.00
+Flags:                              fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 cdp_l3 intel_ppin ssbd mba ibrs ibpb stibp ibrs_enhanced fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid cqm mpx rdt_a avx512f avx512dq rdseed adx smap clflushopt clwb intel_pt avx512cd avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local dtherm ida arat pln pts pku ospke avx512_vnni md_clear flush_l1d arch_capabilities
+L1d cache:                          1.8 MiB (56 instances)
+L1i cache:                          1.8 MiB (56 instances)
+L2 cache:                           56 MiB (56 instances)
+L3 cache:                           77 MiB (2 instances)
+NUMA node(s):                       4
+NUMA node0 CPU(s):                  0,4,8,12,16,20,24,28,32,36,40,44,48,52
+NUMA node1 CPU(s):                  1,5,9,13,17,21,25,29,33,37,41,45,49,53
+NUMA node2 CPU(s):                  2,6,10,14,18,22,26,30,34,38,42,46,50,54
+NUMA node3 CPU(s):                  3,7,11,15,19,23,27,31,35,39,43,47,51,55
+Vulnerability Gather data sampling: Mitigation; Microcode
+Vulnerability Itlb multihit:        KVM: Mitigation: VMX unsupported
+Vulnerability L1tf:                 Not affected
+Vulnerability Mds:                  Not affected
+Vulnerability Meltdown:             Not affected
+Vulnerability Mmio stale data:      Mitigation; Clear CPU buffers; SMT disabled
+Vulnerability Retbleed:             Mitigation; Enhanced IBRS
+Vulnerability Spec rstack overflow: Not affected
+Vulnerability Spec store bypass:    Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:           Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:           Mitigation; Enhanced / Automatic IBRS, IBPB conditional, RSB filling, PBRSB-eIBRS SW sequence
+Vulnerability Srbds:                Not affected
+Vulnerability Tsx async abort:      Mitigation; TSX disabled
+#INFO: **** input file is /central/home/xzhang8/pyscf_benchmark/pbc/multigrid_dft/Si_333_PBE.py ****
+import numpy as np
+from pyscf.pbc import gto
+from pyscf.pbc import dft
+from pyscf.pbc import tools
+from pyscf.pbc.dft import multigrid
+from pyscf.pbc.grad import rks as rks_grad
+
+cell = gto.Cell()
+cell.a = np.eye(3) * 5.4437023729394527
+cell.atom = """
+Si  0.75  0.75  0.25
+Si  0.00  0.50  0.50
+Si  0.75  0.25  0.75
+Si  0.00  0.00  0.00
+Si  0.25  0.75  0.75
+Si  0.50  0.50  0.00
+Si  0.25  0.25  0.25
+Si  0.50  0.00  0.50
+"""
+cell.basis = "gth-dzvp"
+cell.pseudo = "gth-pbe"
+cell.ke_cutoff = 140  # in a.u.
+cell.max_memory = 32000 # in MB
+cell.precision = 1e-8
+cell.verbose = 4
+cell.use_particle_mesh_ewald = True
+cell.fractional = True
+cell.build()
+cell = tools.super_cell(cell, [3]*3)
+
+mf = dft.RKS(cell, exxdiv=None)
+mf.xc = "PBE, PBE"
+mf.init_guess = "atom"
+mf.with_df = multigrid.MultiGridFFTDF2(cell)
+mf.kernel()
+
+grad = rks_grad.Gradients(mf)
+g = grad.kernel()
+#INFO: ******************** input file end ********************
+
+
+System: uname_result(system='Linux', node='hpc-80-21.cm.cluster', release='5.14.0-427.13.1.el9_4.x86_64', version='#1 SMP PREEMPT_DYNAMIC Wed Apr 10 10:29:16 EDT 2024', machine='x86_64')  Threads 28
+Python 3.12.2 | packaged by conda-forge | (main, Feb 16 2024, 20:50:58) [GCC 12.3.0]
+numpy 2.0.1  scipy 1.14.0  h5py 3.11.0
+Date: Tue Jun  3 15:48:44 2025
+PySCF version 2.9.0
+PySCF path  /home/xzhang8/pyscf
+GIT ORIG_HEAD c58968907adc96bc748591c9d72f1bc2c8ee66dc
+GIT HEAD (branch master) 623f6f0a1d94972ead2d432d1e76e0590c021bbe
+
+[ENV] PYSCF_TMPDIR /central/scratch/xzhang8
+[ENV] PYSCF_EXT_PATH /home/xzhang8/pyscf_forge
+[CONFIG] conf_file /home/xzhang8/.pyscf_conf.py
+[INPUT] verbose = 4
+[INPUT] num. atoms = 8
+[INPUT] num. electrons = 32
+[INPUT] charge = 0
+[INPUT] spin (= nelec alpha-beta = 2S) = 0
+[INPUT] symmetry False subgroup None
+[INPUT] Mole.unit = angstrom
+[INPUT] Symbol           X                Y                Z      unit          X                Y                Z       unit  Magmom
+[INPUT]  1 Si     4.082776779705   4.082776779705   1.360925593235 AA    7.715329941375   7.715329941375   2.571776647125 Bohr   0.0
+[INPUT]  2 Si     0.000000000000   2.721851186470   2.721851186470 AA    0.000000000000   5.143553294250   5.143553294250 Bohr   0.0
+[INPUT]  3 Si     4.082776779705   1.360925593235   4.082776779705 AA    7.715329941375   2.571776647125   7.715329941375 Bohr   0.0
+[INPUT]  4 Si     0.000000000000   0.000000000000   0.000000000000 AA    0.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT]  5 Si     1.360925593235   4.082776779705   4.082776779705 AA    2.571776647125   7.715329941375   7.715329941375 Bohr   0.0
+[INPUT]  6 Si     2.721851186470   2.721851186470   0.000000000000 AA    5.143553294250   5.143553294250   0.000000000000 Bohr   0.0
+[INPUT]  7 Si     1.360925593235   1.360925593235   1.360925593235 AA    2.571776647125   2.571776647125   2.571776647125 Bohr   0.0
+[INPUT]  8 Si     2.721851186470   0.000000000000   2.721851186470 AA    5.143553294250   0.000000000000   5.143553294250 Bohr   0.0
+
+nuclear repulsion = -33.5133180494043
+number of shells = 24
+number of NR pGTOs = 168
+number of NR cGTOs = 104
+basis = gth-dzvp
+ecp = {}
+CPU time:         6.71
+lattice vectors  a1 [10.287106589, 0.000000000, 0.000000000]
+                 a2 [0.000000000, 10.287106589, 0.000000000]
+                 a3 [0.000000000, 0.000000000, 10.287106589]
+dimension = 3
+low_dim_ft_type = None
+Cell volume = 1088.63
+rcut = 31.212176121645076 (nimgs = [4 4 4])
+lattice sum = 569 cells
+precision = 1e-08
+pseudo = gth-pbe
+ke_cutoff = 140
+    = [57 57 57] mesh (185193 PWs)
+
+
+******** <class 'pyscf.pbc.dft.rks.RKS'> ********
+method = RKS
+initial guess = atom
+damping factor = 0
+level_shift factor = 0
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-07
+SCF conv_tol_grad = None
+SCF max_cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = /central/scratch/xzhang8/tmplqlejie_
+max_memory 32000 MB (current use 88 MB)
+******** PBC SCF flags ********
+kpt = [0. 0. 0.]
+Exchange divergence treatment (exxdiv) = None
+DF object = <pyscf.pbc.dft.multigrid.multigrid_pair.MultiGridFFTDF2 object at 0x7fc65a203470>
+XC functionals = PBE, PBE
+small_rho_cutoff = 1e-07
+Uniform grid, mesh = [171 171 171]
+Set gradient conv threshold to 0.000316228
+Initial guess from superposition of atomic densities.
+Spherically averaged atomic HF for {'Si'}
+
+
+******** <class 'pyscf.scf.atom_hf_pp.AtomSCFPP'> ********
+method = AtomSCFPP
+initial guess = minao
+damping factor = 0
+level_shift factor = 0
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = /central/scratch/xzhang8/tmpjt40ma9i
+max_memory 32000 MB (current use 222 MB)
+atom = Si
+Set gradient conv threshold to 3.16228e-05
+Initial guess from minao.
+tot grids = 19184
+init E= -3.45372131898382
+    CPU time for initialize scf      0.64 sec, wall time      0.06 sec
+cycle= 1 E= -3.46233416427758  delta_E= -0.00861  |g|=    0  |ddm|= 0.501
+    CPU time for cycle= 1      0.03 sec, wall time      0.00 sec
+cycle= 2 E= -3.4626732461303  delta_E= -0.000339  |g|=    0  |ddm|=  0.1
+    CPU time for cycle= 2      0.05 sec, wall time      0.00 sec
+cycle= 3 E= -3.46268797516811  delta_E= -1.47e-05  |g|=    0  |ddm|= 0.0165
+    CPU time for cycle= 3      0.03 sec, wall time      0.00 sec
+cycle= 4 E= -3.46268812982184  delta_E= -1.55e-07  |g|=    0  |ddm|= 0.00282
+    CPU time for cycle= 4      0.03 sec, wall time      0.00 sec
+cycle= 5 E= -3.46268812982442  delta_E= -2.59e-12  |g|=    0  |ddm|= 7.39e-06
+    CPU time for cycle= 5      0.06 sec, wall time      0.00 sec
+Extra cycle  E= -3.46268812982482  delta_E= -4e-13  |g|=    0  |ddm|= 3.93e-06
+    CPU time for scf_cycle      0.86 sec, wall time      0.07 sec
+    CPU time for SCF      0.88 sec, wall time      0.07 sec
+Atomic HF for atom  Si  converged. SCF energy = -3.46268812982482
+
+ke_cutoff for multigrid tasks:
+[5.185185185185185, 15.555555555555555, 46.666666666666664, 140]
+meshes for multigrid tasks:
+[array([33, 33, 33]), array([57, 57, 57]), array([97, 97, 97]), array([171, 171, 171])]
+nelec by numeric integration = 864.0000000000007
+    CPU time for vxc    131.04 sec, wall time      5.46 sec
+init E= -877.42799358177
+    CPU time for initialize scf    299.72 sec, wall time     12.44 sec
+  HOMO = 0.199815123529244  LUMO = 0.245784304511151
+nelec by numeric integration = 864.0001749802344
+    CPU time for vxc    131.55 sec, wall time      5.38 sec
+cycle= 1 E= -848.784589370553  delta_E= 28.6  |g|= 0.773  |ddm|= 77.5
+    CPU time for cycle= 1    180.09 sec, wall time      7.31 sec
+  HOMO = 0.237249494652949  LUMO = 0.262018793619906
+nelec by numeric integration = 864.0003903448899
+    CPU time for vxc    130.82 sec, wall time      5.40 sec
+cycle= 2 E= -849.136854967414  delta_E= -0.352  |g|= 0.182  |ddm|= 78.5
+    CPU time for cycle= 2    394.81 sec, wall time     15.48 sec
+  HOMO = 0.229773459009735  LUMO = 0.25861448974381
+nelec by numeric integration = 864.0003286433616
+    CPU time for vxc    130.20 sec, wall time      5.38 sec
+cycle= 3 E= -849.157429490432  delta_E= -0.0206  |g|= 0.00179  |ddm|= 19.5
+    CPU time for cycle= 3    179.77 sec, wall time      7.49 sec
+  HOMO = 0.229772038169786  LUMO = 0.258570444258432
+nelec by numeric integration = 864.0003288214159
+    CPU time for vxc    130.84 sec, wall time      5.38 sec
+cycle= 4 E= -849.1574316051  delta_E= -2.11e-06  |g|= 8.5e-05  |ddm|= 0.105
+    CPU time for cycle= 4    180.44 sec, wall time      7.53 sec
+  HOMO = 0.229770242605432  LUMO = 0.258568637745433
+nelec by numeric integration = 864.000328807455
+    CPU time for vxc    129.85 sec, wall time      5.31 sec
+cycle= 5 E= -849.157431593791  delta_E= 1.13e-08  |g|= 0.000197  |ddm|= 0.00701
+    CPU time for cycle= 5    186.57 sec, wall time      7.75 sec
+  HOMO = 0.229770208491283  LUMO = 0.258568460668233
+nelec by numeric integration = 864.0003288075092
+    CPU time for vxc    131.64 sec, wall time      5.42 sec
+Extra cycle  E= -849.157431294053  delta_E= 3e-07  |g|= 0.00102  |ddm|= 0.00667
+    CPU time for scf_cycle   1604.40 sec, wall time     65.43 sec
+    CPU time for SCF   1604.81 sec, wall time     65.47 sec
+converged SCF energy = -849.157431294053
+
+
+******** <class 'pyscf.pbc.grad.rks.Gradients'> for <class 'pyscf.pbc.dft.rks.RKS'> ********
+unit = Eh/Bohr
+max_memory 32000 MB (current use 1175 MB)
+ke_cutoff for multigrid tasks:
+[5.185185185185185, 15.555555555555555, 46.666666666666664, 140]
+meshes for multigrid tasks:
+[array([33, 33, 33]), array([57, 57, 57]), array([97, 97, 97]), array([171, 171, 171])]
+    CPU time for gradients of 2e part    215.46 sec, wall time      9.07 sec
+    CPU time for vpploc_part1_nuc_grad      3.82 sec, wall time      0.16 sec
+    CPU time for _contract_vhf_dm      1.63 sec, wall time      0.07 sec
+    CPU time for _contract_vhf_dm      1.82 sec, wall time      0.09 sec
+    CPU time for nuclear gradient      0.41 sec, wall time      0.05 sec
+    CPU time for SCF gradients    552.85 sec, wall time     21.71 sec
+--------------- RKS gradients ---------------
+         x                y                z
+0 Si     0.0000115675     0.0000115675     0.0000100119
+1 Si     0.0000000013     0.0000124057     0.0000124057
+2 Si     0.0000115675     0.0000100119     0.0000115675
+3 Si     0.0000000000     0.0000000000    -0.0000000000
+4 Si     0.0000100119     0.0000115675     0.0000115675
+5 Si     0.0000124056     0.0000124057     0.0000000013
+6 Si     0.0000100352     0.0000100352     0.0000100352
+7 Si     0.0000124056     0.0000000013     0.0000124057
+8 Si     0.0000115902     0.0000115902     0.0000102257
+9 Si     0.0000000000     0.0000124103     0.0000000000
+10 Si     0.0000115779     0.0000100136    -0.0000102395
+11 Si     0.0000000000     0.0000000000     0.0000127802
+12 Si     0.0000100136     0.0000115779    -0.0000102395
+13 Si     0.0000124126     0.0000124126     0.0000126552
+14 Si     0.0000100207     0.0000100207     0.0000102486
+15 Si     0.0000124103     0.0000000000     0.0000000000
+16 Si     0.0000115857     0.0000115857    -0.0000115857
+17 Si    -0.0000000013     0.0000124057    -0.0000124057
+18 Si     0.0000115564     0.0000100283    -0.0000100283
+19 Si     0.0000000000     0.0000000000    -0.0000127802
+20 Si     0.0000100283     0.0000115564    -0.0000100283
+21 Si     0.0000124081     0.0000124081    -0.0000126488
+22 Si     0.0000100283     0.0000100283    -0.0000115564
+23 Si     0.0000124056    -0.0000000013    -0.0000124057
+24 Si     0.0000115779    -0.0000102395     0.0000100136
+25 Si     0.0000000000    -0.0000000000     0.0000124103
+26 Si     0.0000115902     0.0000102256     0.0000115903
+27 Si     0.0000000000     0.0000127802    -0.0000000000
+28 Si     0.0000100136    -0.0000102395     0.0000115779
+29 Si     0.0000124103    -0.0000000000    -0.0000000000
+30 Si     0.0000100207     0.0000102486     0.0000100207
+31 Si     0.0000124126     0.0000126552     0.0000124126
+32 Si     0.0000116007    -0.0000102240     0.0000102240
+33 Si     0.0000000000    -0.0000000000     0.0000000000
+34 Si     0.0000116007     0.0000102240    -0.0000102240
+35 Si     0.0000000014     0.0000128791     0.0000128792
+36 Si     0.0000100064    -0.0000102327    -0.0000102327
+37 Si     0.0000124137     0.0000000028     0.0000126555
+38 Si     0.0000100064     0.0000102327     0.0000102327
+39 Si     0.0000124137     0.0000126555     0.0000000028
+40 Si     0.0000115902    -0.0000102257    -0.0000115903
+41 Si     0.0000000000    -0.0000000000    -0.0000124103
+42 Si     0.0000115779     0.0000102395    -0.0000100136
+43 Si    -0.0000000014     0.0000128791    -0.0000128791
+44 Si     0.0000100207    -0.0000102486    -0.0000100207
+45 Si     0.0000124137    -0.0000000028    -0.0000126555
+46 Si     0.0000100136     0.0000102395    -0.0000115779
+47 Si     0.0000124081     0.0000126488    -0.0000124082
+48 Si     0.0000115564    -0.0000100283     0.0000100283
+49 Si    -0.0000000013    -0.0000124057     0.0000124057
+50 Si     0.0000115857    -0.0000115857     0.0000115857
+51 Si     0.0000000000    -0.0000127802    -0.0000000000
+52 Si     0.0000100283    -0.0000100283     0.0000115564
+53 Si     0.0000124056    -0.0000124057    -0.0000000013
+54 Si     0.0000100283    -0.0000115564     0.0000100283
+55 Si     0.0000124081    -0.0000126488     0.0000124081
+56 Si     0.0000115779    -0.0000100136     0.0000102395
+57 Si     0.0000000000    -0.0000124103     0.0000000000
+58 Si     0.0000115902    -0.0000115902    -0.0000102256
+59 Si    -0.0000000014    -0.0000128791     0.0000128792
+60 Si     0.0000100207    -0.0000100207    -0.0000102486
+61 Si     0.0000124081    -0.0000124081     0.0000126488
+62 Si     0.0000100136    -0.0000115779     0.0000102395
+63 Si     0.0000124137    -0.0000126555    -0.0000000028
+64 Si     0.0000115675    -0.0000100119    -0.0000115675
+65 Si     0.0000000013    -0.0000124057    -0.0000124057
+66 Si     0.0000115675    -0.0000115675    -0.0000100119
+67 Si     0.0000000014    -0.0000128791    -0.0000128791
+68 Si     0.0000100352    -0.0000100352    -0.0000100352
+69 Si     0.0000124126    -0.0000124126    -0.0000126552
+70 Si     0.0000100119    -0.0000115675    -0.0000115675
+71 Si     0.0000124126    -0.0000126552    -0.0000124126
+72 Si    -0.0000102395     0.0000115779     0.0000100136
+73 Si     0.0000126551     0.0000124126     0.0000124126
+74 Si    -0.0000102395     0.0000100136     0.0000115779
+75 Si     0.0000127802     0.0000000000    -0.0000000000
+76 Si     0.0000102256     0.0000115902     0.0000115903
+77 Si    -0.0000000000     0.0000124103    -0.0000000000
+78 Si     0.0000102485     0.0000100207     0.0000100207
+79 Si    -0.0000000000     0.0000000000     0.0000124103
+80 Si    -0.0000102240     0.0000116007     0.0000102240
+81 Si     0.0000126555     0.0000124137     0.0000000028
+82 Si    -0.0000102327     0.0000100064    -0.0000102327
+83 Si     0.0000128791     0.0000000014     0.0000128792
+84 Si     0.0000102240     0.0000116007    -0.0000102240
+85 Si     0.0000000028     0.0000124137     0.0000126555
+86 Si     0.0000102327     0.0000100064     0.0000102327
+87 Si    -0.0000000000     0.0000000000     0.0000000000
+88 Si    -0.0000102256     0.0000115902    -0.0000115903
+89 Si     0.0000126488     0.0000124081    -0.0000124082
+90 Si    -0.0000102486     0.0000100207    -0.0000100207
+91 Si     0.0000128791    -0.0000000014    -0.0000128791
+92 Si     0.0000102395     0.0000115779    -0.0000100136
+93 Si    -0.0000000028     0.0000124137    -0.0000126555
+94 Si     0.0000102395     0.0000100136    -0.0000115779
+95 Si    -0.0000000000     0.0000000000    -0.0000124103
+96 Si    -0.0000102327    -0.0000102327     0.0000100064
+97 Si     0.0000126555     0.0000000028     0.0000124137
+98 Si    -0.0000102240     0.0000102240     0.0000116007
+99 Si     0.0000128791     0.0000128791     0.0000000014
+100 Si     0.0000102240    -0.0000102240     0.0000116007
+101 Si    -0.0000000000    -0.0000000000    -0.0000000000
+102 Si     0.0000102327     0.0000102327     0.0000100064
+103 Si     0.0000000028     0.0000126555     0.0000124137
+104 Si    -0.0000102171    -0.0000102171     0.0000102171
+105 Si     0.0000126582    -0.0000000000     0.0000000000
+106 Si    -0.0000102171     0.0000102171    -0.0000102171
+107 Si     0.0000129481     0.0000129481     0.0000129481
+108 Si     0.0000102171    -0.0000102171    -0.0000102171
+109 Si    -0.0000000000    -0.0000000000     0.0000126582
+110 Si     0.0000102171     0.0000102171     0.0000102171
+111 Si    -0.0000000000     0.0000126582     0.0000000000
+112 Si    -0.0000102240    -0.0000102240    -0.0000116007
+113 Si     0.0000126555    -0.0000000028    -0.0000124138
+114 Si    -0.0000102327     0.0000102327    -0.0000100064
+115 Si     0.0000129431     0.0000129431    -0.0000129431
+116 Si     0.0000102327    -0.0000102327    -0.0000100064
+117 Si    -0.0000000000    -0.0000000000    -0.0000126582
+118 Si     0.0000102240     0.0000102240    -0.0000116007
+119 Si    -0.0000000028     0.0000126555    -0.0000124138
+120 Si    -0.0000102486    -0.0000100207     0.0000100207
+121 Si     0.0000126488    -0.0000124081     0.0000124081
+122 Si    -0.0000102256    -0.0000115902     0.0000115903
+123 Si     0.0000128791    -0.0000128791    -0.0000000014
+124 Si     0.0000102395    -0.0000100136     0.0000115779
+125 Si    -0.0000000000    -0.0000124103    -0.0000000000
+126 Si     0.0000102395    -0.0000115779     0.0000100136
+127 Si    -0.0000000028    -0.0000126555     0.0000124137
+128 Si    -0.0000102327    -0.0000100064     0.0000102327
+129 Si     0.0000126555    -0.0000124137    -0.0000000028
+130 Si    -0.0000102240    -0.0000116007    -0.0000102240
+131 Si     0.0000129431    -0.0000129431     0.0000129431
+132 Si     0.0000102327    -0.0000100064    -0.0000102327
+133 Si    -0.0000000028    -0.0000124137     0.0000126555
+134 Si     0.0000102240    -0.0000116007     0.0000102240
+135 Si    -0.0000000000    -0.0000126582     0.0000000000
+136 Si    -0.0000102395    -0.0000100136    -0.0000115779
+137 Si     0.0000126551    -0.0000124126    -0.0000124126
+138 Si    -0.0000102395    -0.0000115779    -0.0000100136
+139 Si     0.0000129481    -0.0000129481    -0.0000129481
+140 Si     0.0000102485    -0.0000100207    -0.0000100207
+141 Si     0.0000000028    -0.0000124137    -0.0000126555
+142 Si     0.0000102256    -0.0000115902    -0.0000115903
+143 Si     0.0000000028    -0.0000126555    -0.0000124138
+144 Si    -0.0000100283     0.0000115564     0.0000100283
+145 Si    -0.0000126488     0.0000124081     0.0000124081
+146 Si    -0.0000100283     0.0000100283     0.0000115564
+147 Si    -0.0000127802     0.0000000000    -0.0000000000
+148 Si    -0.0000115857     0.0000115857     0.0000115857
+149 Si    -0.0000124056     0.0000124057    -0.0000000013
+150 Si    -0.0000115564     0.0000100283     0.0000100283
+151 Si    -0.0000124056    -0.0000000013     0.0000124057
+152 Si    -0.0000100136     0.0000115779     0.0000102395
+153 Si    -0.0000126555     0.0000124137    -0.0000000028
+154 Si    -0.0000100207     0.0000100207    -0.0000102486
+155 Si    -0.0000128791    -0.0000000014     0.0000128792
+156 Si    -0.0000115902     0.0000115902    -0.0000102256
+157 Si    -0.0000124081     0.0000124081     0.0000126488
+158 Si    -0.0000115779     0.0000100136     0.0000102395
+159 Si    -0.0000124103     0.0000000000     0.0000000000
+160 Si    -0.0000100119     0.0000115675    -0.0000115675
+161 Si    -0.0000126551     0.0000124126    -0.0000124126
+162 Si    -0.0000100352     0.0000100352    -0.0000100352
+163 Si    -0.0000128791     0.0000000014    -0.0000128791
+164 Si    -0.0000115675     0.0000115675    -0.0000100119
+165 Si    -0.0000124126     0.0000124126    -0.0000126552
+166 Si    -0.0000115675     0.0000100119    -0.0000115675
+167 Si    -0.0000124056     0.0000000013    -0.0000124057
+168 Si    -0.0000100207    -0.0000102486     0.0000100207
+169 Si    -0.0000126555    -0.0000000028     0.0000124137
+170 Si    -0.0000100136     0.0000102395     0.0000115779
+171 Si    -0.0000128791     0.0000128791    -0.0000000014
+172 Si    -0.0000115902    -0.0000102257     0.0000115903
+173 Si    -0.0000124103    -0.0000000000    -0.0000000000
+174 Si    -0.0000115779     0.0000102395     0.0000100136
+175 Si    -0.0000124081     0.0000126488     0.0000124081
+176 Si    -0.0000100064    -0.0000102327     0.0000102327
+177 Si    -0.0000126582    -0.0000000000     0.0000000000
+178 Si    -0.0000100064     0.0000102327    -0.0000102327
+179 Si    -0.0000129431     0.0000129431     0.0000129431
+180 Si    -0.0000116007    -0.0000102240    -0.0000102240
+181 Si    -0.0000124137    -0.0000000028     0.0000126555
+182 Si    -0.0000116007     0.0000102240     0.0000102240
+183 Si    -0.0000124137     0.0000126555    -0.0000000028
+184 Si    -0.0000100136    -0.0000102395    -0.0000115779
+185 Si    -0.0000126555     0.0000000028    -0.0000124138
+186 Si    -0.0000100207     0.0000102486    -0.0000100207
+187 Si    -0.0000129481     0.0000129481    -0.0000129481
+188 Si    -0.0000115779    -0.0000102395    -0.0000100136
+189 Si    -0.0000124137     0.0000000028    -0.0000126555
+190 Si    -0.0000115902     0.0000102256    -0.0000115903
+191 Si    -0.0000124126     0.0000126552    -0.0000124126
+192 Si    -0.0000100352    -0.0000100352     0.0000100352
+193 Si    -0.0000126551    -0.0000124126     0.0000124126
+194 Si    -0.0000100119    -0.0000115675     0.0000115675
+195 Si    -0.0000128791    -0.0000128791     0.0000000014
+196 Si    -0.0000115675    -0.0000100119     0.0000115675
+197 Si    -0.0000124056    -0.0000124057     0.0000000013
+198 Si    -0.0000115675    -0.0000115675     0.0000100119
+199 Si    -0.0000124126    -0.0000126552     0.0000124126
+200 Si    -0.0000100207    -0.0000100207     0.0000102486
+201 Si    -0.0000126555    -0.0000124137     0.0000000028
+202 Si    -0.0000100136    -0.0000115779    -0.0000102395
+203 Si    -0.0000129481    -0.0000129481     0.0000129481
+204 Si    -0.0000115779    -0.0000100136    -0.0000102395
+205 Si    -0.0000124126    -0.0000124126     0.0000126552
+206 Si    -0.0000115902    -0.0000115902     0.0000102257
+207 Si    -0.0000124137    -0.0000126555     0.0000000028
+208 Si    -0.0000100283    -0.0000100283    -0.0000115564
+209 Si    -0.0000126488    -0.0000124081    -0.0000124082
+210 Si    -0.0000100283    -0.0000115564    -0.0000100283
+211 Si    -0.0000129431    -0.0000129431    -0.0000129431
+212 Si    -0.0000115564    -0.0000100283    -0.0000100283
+213 Si    -0.0000124081    -0.0000124081    -0.0000126488
+214 Si    -0.0000115857    -0.0000115857    -0.0000115857
+215 Si    -0.0000124081    -0.0000126488    -0.0000124082
+----------------------------------------------

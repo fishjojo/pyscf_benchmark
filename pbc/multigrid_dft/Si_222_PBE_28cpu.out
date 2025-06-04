@@ -1,0 +1,330 @@
+Architecture:                       x86_64
+CPU op-mode(s):                     32-bit, 64-bit
+Address sizes:                      46 bits physical, 48 bits virtual
+Byte Order:                         Little Endian
+CPU(s):                             56
+On-line CPU(s) list:                0-55
+Vendor ID:                          GenuineIntel
+Model name:                         Intel(R) Xeon(R) Platinum 8276 CPU @ 2.20GHz
+CPU family:                         6
+Model:                              85
+Thread(s) per core:                 1
+Core(s) per socket:                 28
+Socket(s):                          2
+Stepping:                           7
+CPU(s) scaling MHz:                 87%
+CPU max MHz:                        4000.0000
+CPU min MHz:                        1000.0000
+BogoMIPS:                           4400.00
+Flags:                              fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 cdp_l3 intel_ppin ssbd mba ibrs ibpb stibp ibrs_enhanced fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid cqm mpx rdt_a avx512f avx512dq rdseed adx smap clflushopt clwb intel_pt avx512cd avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local dtherm ida arat pln pts pku ospke avx512_vnni md_clear flush_l1d arch_capabilities
+L1d cache:                          1.8 MiB (56 instances)
+L1i cache:                          1.8 MiB (56 instances)
+L2 cache:                           56 MiB (56 instances)
+L3 cache:                           77 MiB (2 instances)
+NUMA node(s):                       4
+NUMA node0 CPU(s):                  0,4,8,12,16,20,24,28,32,36,40,44,48,52
+NUMA node1 CPU(s):                  1,5,9,13,17,21,25,29,33,37,41,45,49,53
+NUMA node2 CPU(s):                  2,6,10,14,18,22,26,30,34,38,42,46,50,54
+NUMA node3 CPU(s):                  3,7,11,15,19,23,27,31,35,39,43,47,51,55
+Vulnerability Gather data sampling: Mitigation; Microcode
+Vulnerability Itlb multihit:        KVM: Mitigation: VMX unsupported
+Vulnerability L1tf:                 Not affected
+Vulnerability Mds:                  Not affected
+Vulnerability Meltdown:             Not affected
+Vulnerability Mmio stale data:      Mitigation; Clear CPU buffers; SMT disabled
+Vulnerability Retbleed:             Mitigation; Enhanced IBRS
+Vulnerability Spec rstack overflow: Not affected
+Vulnerability Spec store bypass:    Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:           Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:           Mitigation; Enhanced / Automatic IBRS, IBPB conditional, RSB filling, PBRSB-eIBRS SW sequence
+Vulnerability Srbds:                Not affected
+Vulnerability Tsx async abort:      Mitigation; TSX disabled
+#INFO: **** input file is /central/home/xzhang8/pyscf_benchmark/pbc/multigrid_dft/Si_222_PBE.py ****
+import numpy as np
+from pyscf.pbc import gto
+from pyscf.pbc import dft
+from pyscf.pbc import tools
+from pyscf.pbc.dft import multigrid
+from pyscf.pbc.grad import rks as rks_grad
+
+cell = gto.Cell()
+cell.a = np.eye(3) * 5.4437023729394527
+cell.atom = """
+Si  0.75  0.75  0.25
+Si  0.00  0.50  0.50
+Si  0.75  0.25  0.75
+Si  0.00  0.00  0.00
+Si  0.25  0.75  0.75
+Si  0.50  0.50  0.00
+Si  0.25  0.25  0.25
+Si  0.50  0.00  0.50
+"""
+cell.basis = "gth-dzvp"
+cell.pseudo = "gth-pbe"
+cell.ke_cutoff = 140  # in a.u.
+cell.max_memory = 32000 # in MB
+cell.precision = 1e-8
+cell.verbose = 4
+cell.use_particle_mesh_ewald = True
+cell.fractional = True
+cell.build()
+cell = tools.super_cell(cell, [2]*3)
+
+mf = dft.RKS(cell, exxdiv=None)
+mf.xc = "PBE, PBE"
+mf.init_guess = "atom"
+mf.with_df = multigrid.MultiGridFFTDF2(cell)
+mf.kernel()
+
+grad = rks_grad.Gradients(mf)
+g = grad.kernel()
+#INFO: ******************** input file end ********************
+
+
+System: uname_result(system='Linux', node='hpc-80-21.cm.cluster', release='5.14.0-427.13.1.el9_4.x86_64', version='#1 SMP PREEMPT_DYNAMIC Wed Apr 10 10:29:16 EDT 2024', machine='x86_64')  Threads 28
+Python 3.12.2 | packaged by conda-forge | (main, Feb 16 2024, 20:50:58) [GCC 12.3.0]
+numpy 2.0.1  scipy 1.14.0  h5py 3.11.0
+Date: Tue Jun  3 15:46:04 2025
+PySCF version 2.9.0
+PySCF path  /home/xzhang8/pyscf
+GIT ORIG_HEAD c58968907adc96bc748591c9d72f1bc2c8ee66dc
+GIT HEAD (branch master) 623f6f0a1d94972ead2d432d1e76e0590c021bbe
+
+[ENV] PYSCF_TMPDIR /central/scratch/xzhang8
+[ENV] PYSCF_EXT_PATH /home/xzhang8/pyscf_forge
+[CONFIG] conf_file /home/xzhang8/.pyscf_conf.py
+[INPUT] verbose = 4
+[INPUT] num. atoms = 8
+[INPUT] num. electrons = 32
+[INPUT] charge = 0
+[INPUT] spin (= nelec alpha-beta = 2S) = 0
+[INPUT] symmetry False subgroup None
+[INPUT] Mole.unit = angstrom
+[INPUT] Symbol           X                Y                Z      unit          X                Y                Z       unit  Magmom
+[INPUT]  1 Si     4.082776779705   4.082776779705   1.360925593235 AA    7.715329941375   7.715329941375   2.571776647125 Bohr   0.0
+[INPUT]  2 Si     0.000000000000   2.721851186470   2.721851186470 AA    0.000000000000   5.143553294250   5.143553294250 Bohr   0.0
+[INPUT]  3 Si     4.082776779705   1.360925593235   4.082776779705 AA    7.715329941375   2.571776647125   7.715329941375 Bohr   0.0
+[INPUT]  4 Si     0.000000000000   0.000000000000   0.000000000000 AA    0.000000000000   0.000000000000   0.000000000000 Bohr   0.0
+[INPUT]  5 Si     1.360925593235   4.082776779705   4.082776779705 AA    2.571776647125   7.715329941375   7.715329941375 Bohr   0.0
+[INPUT]  6 Si     2.721851186470   2.721851186470   0.000000000000 AA    5.143553294250   5.143553294250   0.000000000000 Bohr   0.0
+[INPUT]  7 Si     1.360925593235   1.360925593235   1.360925593235 AA    2.571776647125   2.571776647125   2.571776647125 Bohr   0.0
+[INPUT]  8 Si     2.721851186470   0.000000000000   2.721851186470 AA    5.143553294250   0.000000000000   5.143553294250 Bohr   0.0
+
+nuclear repulsion = -33.5133180494043
+number of shells = 24
+number of NR pGTOs = 168
+number of NR cGTOs = 104
+basis = gth-dzvp
+ecp = {}
+CPU time:         7.41
+lattice vectors  a1 [10.287106589, 0.000000000, 0.000000000]
+                 a2 [0.000000000, 10.287106589, 0.000000000]
+                 a3 [0.000000000, 0.000000000, 10.287106589]
+dimension = 3
+low_dim_ft_type = None
+Cell volume = 1088.63
+rcut = 31.212176121645076 (nimgs = [4 4 4])
+lattice sum = 569 cells
+precision = 1e-08
+pseudo = gth-pbe
+ke_cutoff = 140
+    = [57 57 57] mesh (185193 PWs)
+
+
+******** <class 'pyscf.pbc.dft.rks.RKS'> ********
+method = RKS
+initial guess = atom
+damping factor = 0
+level_shift factor = 0
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-07
+SCF conv_tol_grad = None
+SCF max_cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = /central/scratch/xzhang8/tmp3do37_1y
+max_memory 32000 MB (current use 88 MB)
+******** PBC SCF flags ********
+kpt = [0. 0. 0.]
+Exchange divergence treatment (exxdiv) = None
+DF object = <pyscf.pbc.dft.multigrid.multigrid_pair.MultiGridFFTDF2 object at 0x7f3e25572cc0>
+XC functionals = PBE, PBE
+small_rho_cutoff = 1e-07
+Uniform grid, mesh = [115 115 115]
+Set gradient conv threshold to 0.000316228
+Initial guess from superposition of atomic densities.
+Spherically averaged atomic HF for {'Si'}
+
+
+******** <class 'pyscf.scf.atom_hf_pp.AtomSCFPP'> ********
+method = AtomSCFPP
+initial guess = minao
+damping factor = 0
+level_shift factor = 0
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+diis_start_cycle = 1
+diis_space = 8
+diis_damp = 0
+SCF conv_tol = 1e-09
+SCF conv_tol_grad = None
+SCF max_cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = /central/scratch/xzhang8/tmprn6xw7wc
+max_memory 32000 MB (current use 115 MB)
+atom = Si
+Set gradient conv threshold to 3.16228e-05
+Initial guess from minao.
+tot grids = 19184
+init E= -3.45372131898382
+    CPU time for initialize scf      0.66 sec, wall time      0.06 sec
+cycle= 1 E= -3.46233416427758  delta_E= -0.00861  |g|=    0  |ddm|= 0.501
+    CPU time for cycle= 1      0.03 sec, wall time      0.00 sec
+cycle= 2 E= -3.4626732461303  delta_E= -0.000339  |g|=    0  |ddm|=  0.1
+    CPU time for cycle= 2      0.06 sec, wall time      0.00 sec
+cycle= 3 E= -3.46268797516811  delta_E= -1.47e-05  |g|=    0  |ddm|= 0.0165
+    CPU time for cycle= 3      0.03 sec, wall time      0.00 sec
+cycle= 4 E= -3.46268812982184  delta_E= -1.55e-07  |g|=    0  |ddm|= 0.00282
+    CPU time for cycle= 4      0.03 sec, wall time      0.00 sec
+cycle= 5 E= -3.46268812982443  delta_E= -2.59e-12  |g|=    0  |ddm|= 7.39e-06
+    CPU time for cycle= 5      0.06 sec, wall time      0.00 sec
+Extra cycle  E= -3.46268812982482  delta_E= -3.99e-13  |g|=    0  |ddm|= 3.93e-06
+    CPU time for scf_cycle      0.88 sec, wall time      0.07 sec
+    CPU time for SCF      0.88 sec, wall time      0.07 sec
+Atomic HF for atom  Si  converged. SCF energy = -3.46268812982482
+
+ke_cutoff for multigrid tasks:
+[5.185185185185185, 15.555555555555555, 46.666666666666664, 140]
+meshes for multigrid tasks:
+[array([23, 23, 23]), array([39, 39, 39]), array([65, 65, 65]), array([115, 115, 115])]
+nelec by numeric integration = 255.9935187114437
+    CPU time for vxc     34.10 sec, wall time      1.36 sec
+init E= -259.974479369931
+    CPU time for initialize scf     92.88 sec, wall time      3.70 sec
+  HOMO = 0.199816072978616  LUMO = 0.247229258529793
+nelec by numeric integration = 255.99994432630598
+    CPU time for vxc     33.78 sec, wall time      1.30 sec
+cycle= 1 E= -251.269249178114  delta_E= 8.71  |g|= 0.424  |ddm|= 37.6
+    CPU time for cycle= 1     40.77 sec, wall time      1.57 sec
+  HOMO = 0.238659055340528  LUMO = 0.262900962227302
+nelec by numeric integration = 255.99991248267938
+    CPU time for vxc     36.59 sec, wall time      1.47 sec
+cycle= 2 E= -251.376659834385  delta_E= -0.107  |g|= 0.0935  |ddm|=   26
+    CPU time for cycle= 2     92.88 sec, wall time      3.64 sec
+  HOMO = 0.23123319039864  LUMO = 0.25959239526
+nelec by numeric integration = 255.99994696192195
+    CPU time for vxc     36.77 sec, wall time      1.46 sec
+cycle= 3 E= -251.38212784368  delta_E= -0.00547  |g|= 0.000931  |ddm|= 5.67
+    CPU time for cycle= 3     51.47 sec, wall time      2.01 sec
+  HOMO = 0.231234210849596  LUMO = 0.259546137231184
+nelec by numeric integration = 255.9999470469787
+    CPU time for vxc     36.26 sec, wall time      1.43 sec
+cycle= 4 E= -251.382128396062  delta_E= -5.52e-07  |g|= 0.000131  |ddm|= 0.0444
+    CPU time for cycle= 4     47.54 sec, wall time      1.85 sec
+  HOMO = 0.231233043269116  LUMO = 0.259545008408128
+nelec by numeric integration = 255.99994705939488
+    CPU time for vxc     39.13 sec, wall time      1.57 sec
+cycle= 5 E= -251.382128293935  delta_E= 1.02e-07  |g|= 0.000563  |ddm|= 0.00365
+    CPU time for cycle= 5     85.04 sec, wall time      3.29 sec
+  HOMO = 0.23123285335465  LUMO = 0.259544833460788
+nelec by numeric integration = 255.99994706137562
+    CPU time for vxc     36.65 sec, wall time      1.46 sec
+cycle= 6 E= -251.382128401498  delta_E= -1.08e-07  |g|= 3.98e-05  |ddm|= 0.00278
+    CPU time for cycle= 6    234.01 sec, wall time      9.02 sec
+  HOMO = 0.231232847108212  LUMO = 0.25954481707832
+nelec by numeric integration = 255.9999470614412
+    CPU time for vxc     40.74 sec, wall time      1.61 sec
+cycle= 7 E= -251.382128402109  delta_E= -6.11e-10  |g|= 2.29e-06  |ddm|= 0.000241
+    CPU time for cycle= 7    107.82 sec, wall time      4.10 sec
+  HOMO = 0.231232844878669  LUMO = 0.259544771378593
+nelec by numeric integration = 255.99994706153782
+    CPU time for vxc     34.78 sec, wall time      1.36 sec
+Extra cycle  E= -251.382128402102  delta_E= 6.91e-12  |g|= 4.85e-06  |ddm|= 6.89e-05
+    CPU time for scf_cycle    798.47 sec, wall time     30.97 sec
+    CPU time for SCF    798.57 sec, wall time     31.00 sec
+converged SCF energy = -251.382128402102
+
+
+******** <class 'pyscf.pbc.grad.rks.Gradients'> for <class 'pyscf.pbc.dft.rks.RKS'> ********
+unit = Eh/Bohr
+max_memory 32000 MB (current use 846 MB)
+ke_cutoff for multigrid tasks:
+[5.185185185185185, 15.555555555555555, 46.666666666666664, 140]
+meshes for multigrid tasks:
+[array([23, 23, 23]), array([39, 39, 39]), array([65, 65, 65]), array([115, 115, 115])]
+    CPU time for gradients of 2e part     52.41 sec, wall time      2.05 sec
+    CPU time for vpploc_part1_nuc_grad      2.85 sec, wall time      0.10 sec
+    CPU time for _contract_vhf_dm      0.18 sec, wall time      0.01 sec
+    CPU time for _contract_vhf_dm      0.20 sec, wall time      0.01 sec
+    CPU time for nuclear gradient      0.36 sec, wall time      0.03 sec
+    CPU time for SCF gradients    111.48 sec, wall time      4.35 sec
+--------------- RKS gradients ---------------
+         x                y                z
+0 Si     0.0000001339     0.0000001339     0.0000001089
+1 Si    -0.0000000558    -0.0000000605    -0.0000000605
+2 Si     0.0000001339     0.0000001089     0.0000001339
+3 Si    -0.0000000000    -0.0000000000    -0.0000000000
+4 Si     0.0000001089     0.0000001339     0.0000001339
+5 Si    -0.0000000605    -0.0000000605    -0.0000000558
+6 Si     0.0000001763     0.0000001763     0.0000001763
+7 Si    -0.0000000605    -0.0000000558    -0.0000000605
+8 Si     0.0000000676     0.0000000676    -0.0000000676
+9 Si     0.0000000558    -0.0000000605     0.0000000605
+10 Si     0.0000001268     0.0000000824    -0.0000000824
+11 Si    -0.0000000000    -0.0000000000     0.0000000000
+12 Si     0.0000000824     0.0000001268    -0.0000000824
+13 Si    -0.0000001260    -0.0000001260    -0.0000000453
+14 Si     0.0000000824     0.0000000824    -0.0000001268
+15 Si    -0.0000000605     0.0000000558     0.0000000605
+16 Si     0.0000001268    -0.0000000824     0.0000000824
+17 Si     0.0000000558     0.0000000605    -0.0000000605
+18 Si     0.0000000676    -0.0000000676     0.0000000676
+19 Si    -0.0000000000     0.0000000000    -0.0000000000
+20 Si     0.0000000824    -0.0000000824     0.0000001268
+21 Si    -0.0000000605     0.0000000605     0.0000000558
+22 Si     0.0000000824    -0.0000001268     0.0000000824
+23 Si    -0.0000001260    -0.0000000453    -0.0000001260
+24 Si     0.0000001339    -0.0000001089    -0.0000001339
+25 Si    -0.0000000558     0.0000000605     0.0000000605
+26 Si     0.0000001339    -0.0000001339    -0.0000001089
+27 Si    -0.0000000000     0.0000000000     0.0000000000
+28 Si     0.0000001763    -0.0000001763    -0.0000001763
+29 Si    -0.0000001260     0.0000001260     0.0000000453
+30 Si     0.0000001089    -0.0000001339    -0.0000001339
+31 Si    -0.0000001260     0.0000000453     0.0000001260
+32 Si    -0.0000000824     0.0000001268     0.0000000824
+33 Si    -0.0000000453    -0.0000001260    -0.0000001260
+34 Si    -0.0000000824     0.0000000824     0.0000001268
+35 Si     0.0000000000    -0.0000000000    -0.0000000000
+36 Si    -0.0000000676     0.0000000676     0.0000000676
+37 Si     0.0000000605    -0.0000000605     0.0000000558
+38 Si    -0.0000001268     0.0000000824     0.0000000824
+39 Si     0.0000000605     0.0000000558    -0.0000000605
+40 Si    -0.0000001089     0.0000001339    -0.0000001339
+41 Si     0.0000000453    -0.0000001260     0.0000001260
+42 Si    -0.0000001763     0.0000001763    -0.0000001763
+43 Si     0.0000000000    -0.0000000000     0.0000000000
+44 Si    -0.0000001339     0.0000001339    -0.0000001089
+45 Si     0.0000001260    -0.0000001260     0.0000000453
+46 Si    -0.0000001339     0.0000001089    -0.0000001339
+47 Si     0.0000000605    -0.0000000558     0.0000000605
+48 Si    -0.0000001763    -0.0000001763     0.0000001763
+49 Si     0.0000000453     0.0000001260    -0.0000001260
+50 Si    -0.0000001089    -0.0000001339     0.0000001339
+51 Si     0.0000000000     0.0000000000    -0.0000000000
+52 Si    -0.0000001339    -0.0000001089     0.0000001339
+53 Si     0.0000000605     0.0000000605    -0.0000000558
+54 Si    -0.0000001339    -0.0000001339     0.0000001089
+55 Si     0.0000001260     0.0000000453    -0.0000001260
+56 Si    -0.0000000824    -0.0000000824    -0.0000001268
+57 Si    -0.0000000453     0.0000001260     0.0000001260
+58 Si    -0.0000000824    -0.0000001268    -0.0000000824
+59 Si     0.0000000000     0.0000000000     0.0000000000
+60 Si    -0.0000001268    -0.0000000824    -0.0000000824
+61 Si     0.0000001260     0.0000001260    -0.0000000453
+62 Si    -0.0000000676    -0.0000000676    -0.0000000676
+63 Si     0.0000001260    -0.0000000453     0.0000001260
+----------------------------------------------
