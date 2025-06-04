@@ -58,4 +58,3 @@ the Fock build time, the total time for one SCF cycle, and the nuclear gradient 
 | Si 4x4x4 | 2025-6-3 | 623f6f0    | 28           | 15.03               |  39.80       |  97.28                    |
 | Si 5x5x5 | 2025-6-3 | 623f6f0    | 28           | 30.24               | 151.69       | 255.05                    |
 | Si 6x6x6 | 2025-6-3 | 623f6f0    | 28           | 54.29               | 722.43       | 611.84                    |
-
