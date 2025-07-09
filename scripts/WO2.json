@@ -1,0 +1,10 @@
+[
+    {
+        "note": ["WO2"],
+        "material_ids": [19372],
+        "conventional_unit_cell": true,
+        "basis": "gth-szv-molopt-sr",
+        "kmesh": [1,1,1],
+        "super_cell": [1,1,1]
+    }
+]
