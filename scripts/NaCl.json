@@ -1,0 +1,10 @@
+[
+    {
+        "note": ["NaCl"],
+        "material_ids": [22862],
+        "conventional_unit_cell": true,
+        "basis": "gth-szv-molopt-sr",
+        "kmesh": [1,1,1],
+        "super_cell": [1,1,1]
+    }
+]
