@@ -1,0 +1,29 @@
+[
+    {
+        "note": ["C","Si"],
+        "material_ids": [66,149],
+        "conventional_unit_cell": false,
+        "kmesh": [2,2,2],
+        "basis": "gth-szv",
+        "pseudo": "gth-pade",
+        "spin": 0,
+        "functional": "lda,vwn"
+    },
+
+    {
+        "note": ["Si"],
+        "material_ids": [149],
+        "conventional_unit_cell": true,
+        "kmesh": [1,1,1],
+        "super_cell": [2,2,2]
+    },
+
+    {
+        "note": ["Fe","Cu"],
+        "material_ids": [13,30],
+        "conventional_unit_cell": false,
+        "kmesh": [2,2,2],
+        "basis": "gth-szv-molopt-sr"
+    }
+]
+
