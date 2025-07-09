@@ -45,7 +45,7 @@ def build_cell(structure,
     return cell
 
 def run_dft(cell, kpts, xc):
-    mf = dft.KRKS(cell, xc=xc)
+    mf = dft.KRKS(cell, kpts=kpts, xc=xc)
     mf.kernel()
     return mf
 

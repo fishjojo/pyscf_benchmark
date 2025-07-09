@@ -1,0 +1,10 @@
+[
+    {
+        "note": ["FeS"],
+        "material_ids": [505531],
+        "conventional_unit_cell": true,
+        "basis": "gth-szv-molopt-sr",
+        "kmesh": [2,2,2],
+        "super_cell": [2,2,1]
+    }
+]
